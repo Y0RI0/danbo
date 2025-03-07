@@ -108,7 +108,7 @@ jobs:
             body: output
           })
 
-    - name: Build and push
+    - name: Test Build
       uses: docker/build-push-action@v6
       with:
         platforms: linux/amd64,linux/arm64
