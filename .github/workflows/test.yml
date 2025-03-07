@@ -17,27 +17,37 @@ env:
   # ${{ env.registry }}
 
 jobs:
+  files:
+    name: Get Changed Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 0
+      - name: Get Git Changed File Directories
+        id: directories
+        uses: tj-actions/changed-files@cc733854b1f224978ef800d29e4709d5ee2883e4 # v44.5.5
+        with:
+          dir_names: false
+          json: true
+          escape_json: false
+          files: |
+            **/Dockerfile
+      - name: Output Changed Directories
+        run: echo ${{ steps.directories.outputs.all_changed_files }}
+    outputs:
+      dirs: ${{ steps.directories.outputs.all_changed_files }}
+
   prepare:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.filepath-matrix.outputs.matrix }}
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Find Changed Dockerfiles
-        id: filter
-        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
-        with:
-          filters: |
-            docker:
-              - '**/Dockerfile'
-
       - name: Set job matrix
         id: filepath-matrix
         run: |
-          echo "${{ steps.filter.outputs.docker_files }}"
+          echo ${{ toJson(needs.files.outputs.dirs) }} # debug
   #
   # build:
   #   runs-on: ubuntu-latest
