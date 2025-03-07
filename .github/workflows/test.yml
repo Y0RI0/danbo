@@ -51,7 +51,7 @@ jobs:
         run: |
           # Format: ["boxes/browser/Dockerfile","boxes/dev/Dockerfile"]
           echo ${{ toJson(needs.files.outputs.dirs) }}  # Debug
-          echo "${{ toJson(needs.files.outputs.dirs) }}" >> "$GITHUB_OUTPUT"
+          echo ${{ toJson(needs.files.outputs.dirs) }} >> $GITHUB_OUTPUT
 
   run-built-tests:
     runs-on: ubuntu-latest
