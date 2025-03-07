@@ -7,7 +7,7 @@ USER root
 
 RUN <<EOT
   apt-get update
-  apt-get install -y --no-install-recommends bashtop=0.9.25-1
+  apt-get install -y --no-install-recommends bashtop
   apt-get clean
   rm -rf /var/lib/apt/lists/*
 EOT
