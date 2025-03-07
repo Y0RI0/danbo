@@ -40,6 +40,8 @@ jobs:
 
   prepare:
     runs-on: ubuntu-latest
+    needs: [files]
+    if: ${{ needs.files.outputs.dirs != '[]' }}
     outputs:
       matrix: ${{ steps.filepath-matrix.outputs.matrix }}
 
