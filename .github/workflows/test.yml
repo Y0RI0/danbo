@@ -37,7 +37,7 @@ jobs:
       - name: Set job matrix
         id: filepath-matrix
         run: |
-          echo ${{ steps.filter.outputs.docker_files }}
+          echo "${{ steps.filter.outputs.docker_files }}"
   #
   # build:
   #   runs-on: ubuntu-latest
