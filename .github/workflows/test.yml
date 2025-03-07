@@ -85,12 +85,13 @@ jobs:
        echo "img=$(echo '${{ env.filepath }}' | awk -F'/' '{print $(NF-1)}')" >> $GITHUB_OUTPUT
 
     - uses: hadolint/hadolint-action@v3.1.0
+      id: hadolint
       with:
         dockerfile: ${{ matrix.file}}
 
     - name: Update Pull Request With Comment
       uses: actions/github-script@v6
-      if: github.event_name == 'pull_request'
+      if: always()
       with:
         script: |
           const output = `
