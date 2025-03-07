@@ -85,6 +85,7 @@ jobs:
        echo "img=$(echo '${{ env.filepath }}' | awk -F'/' '{print $(NF-1)}')" >> $GITHUB_OUTPUT
 
     - uses: hadolint/hadolint-action@v3.1.0
+      id: hadolint
       with:
         dockerfile: ${{ matrix.file}}
 
