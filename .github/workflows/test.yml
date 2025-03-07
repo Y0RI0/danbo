@@ -37,21 +37,6 @@ jobs:
     outputs:
       dirs: ${{ steps.directories.outputs.all_changed_files }}
 
-
-  hide-comment:
-    name: Hide Previous Comments
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # v4.1.7
-
-      - name: Hide Previous Comments
-        uses: ./.github/actions/hide-comment
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.number }}
-
   define-matrix:
     runs-on: ubuntu-latest
     needs: [files]
