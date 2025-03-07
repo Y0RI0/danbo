@@ -95,7 +95,7 @@ jobs:
       with:
         script: |
           const output = `
-          #### Hadolint: \`${{ steps.hadolint.outcome }}\`
+          #### Hadolint for ${{ matrix.file}}: \`${{ steps.hadolint.outcome }}\`
           \`\`\`
           ${process.env.HADOLINT_RESULTS}
           \`\`\`
