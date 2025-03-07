@@ -82,7 +82,7 @@ jobs:
       env:
         filepath: ${{ matrix.file }}
       run: |
-       echo "img=$(echo '${{ env.filepath }}' | awk -F'/' '{print $(NF-1)}'" >> $GITHUB_OUTPUT
+       echo "img=$(echo '${{ env.filepath }}' | awk -F'/' '{print $(NF-1)}')" >> $GITHUB_OUTPUT
 
 
     - name: Build and push
