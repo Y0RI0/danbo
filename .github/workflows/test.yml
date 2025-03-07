@@ -92,5 +92,5 @@ jobs:
         push: false  # only running builds
         file: ${{ matrix.file }}
         tags: |
-          ${{ env.registry }}/${{ env.user }}/${{ steps.awk.output.img }}:latest
-          ${{ env.registry }}/${{ env.user }}/${{ steps.awk.output.img }}:${{ github.sha }}
+          ${{ env.registry }}/${{ env.user }}/${{ steps.awk.outputs.img }}:latest
+          ${{ env.registry }}/${{ env.user }}/${{ steps.awk.outputs.img }}:${{ github.sha }}
