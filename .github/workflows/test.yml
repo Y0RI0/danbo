@@ -12,54 +12,107 @@ on:
       - reopened
 
 env:
-  registry: quay.io
-
-  # ${{ env.registry }}
+  registry: ghcr.io
+  user: nathan-yorio
 
 jobs:
-  prepare:
+  files:
+    name: Get Changed Files
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # v4.1.7
+        with:
+          fetch-depth: 0
+      - name: Get Git Changed File Directories
+        id: directories
+        uses: tj-actions/changed-files@cc733854b1f224978ef800d29e4709d5ee2883e4 # v44.5.5
+        with:
+          dir_names: false
+          json: true
+          escape_json: false
+          files: |
+            **/Dockerfile
+      - name: Output Changed Directories
+        run: echo ${{ steps.directories.outputs.all_changed_files }}
     outputs:
-      matrix: ${{ steps.filepath-matrix.outputs.matrix }}
+      dirs: ${{ steps.directories.outputs.all_changed_files }}
+
+  define-matrix:
+    runs-on: ubuntu-latest
+    needs: [files]
+    if: ${{ needs.files.outputs.dirs != '[]' }}
+
+    outputs:
+      files: ${{ steps.filepath-matrix.outputs.matrix }}
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Find Changed Dockerfiles
-        id: filter
-        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
-        with:
-          filters: |
-            docker:
-              - '**/Dockerfile'
-
       - name: Set job matrix
         id: filepath-matrix
         run: |
-          echo ${{ steps.filter.outputs.docker_files }}
-  #
-  # build:
-  #   runs-on: ubuntu-latest
-  #   needs: prepare
-  #   strategy:
-  #     matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
-  #
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v3
-  #
-  #     - name: Log in to GHCR
-  #       uses: docker/login-action@v2
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
-  #
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v2
-  #
-  #     - name: Build and Push Docker Image
-  #       run: |
-  #         echo "Building and pushing image for ${{ matrix.image_name }} from ${{ matrix.path }}"
-  #         docker buildx build --platform linux/amd64 --push -t "${{ matrix.image_name }}" -f "${{ matrix.path }}" "$(dirname ${{ matrix.path }})"
+          # Format: ["boxes/browser/Dockerfile","boxes/dev/Dockerfile"]
+          echo ${{ toJson(needs.files.outputs.dirs) }}  # Debug
+          echo "matrix=${{ toJson(needs.files.outputs.dirs) }}" >> $GITHUB_OUTPUT
+
+  run-built-tests:
+    runs-on: ubuntu-latest
+    needs: define-matrix
+    strategy:
+      matrix:
+        file: ${{ fromJSON(needs.define-matrix.outputs.files) }}
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: awk image name from path
+      id: awk
+      env:
+        filepath: ${{ matrix.file }}
+      run: |
+       echo "img=$(echo '${{ env.filepath }}' | awk -F'/' '{print $(NF-1)}')" >> $GITHUB_OUTPUT
+
+    - uses: hadolint/hadolint-action@v3.1.0
+      with:
+        dockerfile: ${{ matrix.file}}
+
+    - name: Update Pull Request With Comment
+      uses: actions/github-script@v6
+      if: github.event_name == 'pull_request'
+      with:
+        script: |
+          const output = `
+          #### Hadolint: \`${{ steps.hadolint.outcome }}\`
+          \`\`\`
+          ${process.env.HADOLINT_RESULTS}
+          \`\`\`
+          `;
+
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
+
+    - name: Build and push
+      uses: docker/build-push-action@v6
+      with:
+        platforms: linux/amd64,linux/arm64
+        push: false  # only running builds
+        file: ${{ matrix.file }}
+        tags: |
+          ${{ env.registry }}/${{ env.user }}/${{ steps.awk.outputs.img }}:latest
+          ${{ env.registry }}/${{ env.user }}/${{ steps.awk.outputs.img }}:${{ github.sha }}
