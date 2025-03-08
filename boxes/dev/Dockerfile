@@ -6,7 +6,7 @@ USER root
 
 RUN <<EOT
 apt-get update
-apt-get install luarocks=3.8.0+dfsg1-1 libmagickwand-dev=8:6.9.12.98+dfsg1-5.2build2 libreadline-dev=8.2-4build1 --no-install-recommends -y
+apt-get install luarocks=3.8.0+dfsg1-1 libmagickwand-dev=8:6.9.12.98+dfsg1-5.2build2 libreadline-dev=8.2-4build1 ripgrep=14.1.0-1 wl-clipboard=2.2.1-1build1 --no-install-recommends -y
 apt-get clean
 rm -rf /var/lib/apt/lists/*
 EOT
