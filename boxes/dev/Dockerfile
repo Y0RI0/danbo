@@ -1,17 +1,10 @@
-# Testing
-FROM docker.io/library/ubuntu:24.04
+FROM quay.io/fedora/fedora:41
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-USER root
-
 RUN <<EOT
-  apt-get update
-  apt-get install -y --no-install-recommends bashtop=0.9.25-1
-  apt-get clean
-  rm -rf /var/lib/apt/lists/*
+  dnf check-update
+  dnf install -y neovim readline-devel
+  dnf clean all
+  rm -rf /var/cache/dnf/*
 EOT
-
-ENV PYTHONUNBUFFERED=1
-
-USER ubuntu
