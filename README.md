@@ -1,7 +1,7 @@
 # ダンボー
 
 <p align="center">
-<img src="" width="150" height="150" />
+<img src="https://github.com/Nathan-Yorio/danbo/blob/4f2ffc1264bc121fd881ff92dbd13ba6d8da7fae/assets/danbo-smol.png" width="150" height="150" />
 </p>
 
 
