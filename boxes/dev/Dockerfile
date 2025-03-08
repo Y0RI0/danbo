@@ -18,6 +18,7 @@ ENV HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_ENV_HINTS=1
 RUN <<EOT
 brew install neovim mise zsh -f
 brew cleanup -s
+
 echo 'eval "$(mise activate bash)"' >> /home/linuxbrew/.zshrc
 EOT
 
