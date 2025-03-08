@@ -7,5 +7,4 @@ RUN <<EOT
   dnf install -y neovim readline-devel
   dnf clean all
   rm -rf /var/cache/dnf/*
-  echo "something to trigger build cache"
 EOT
