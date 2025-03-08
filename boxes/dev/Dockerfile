@@ -1,11 +1,26 @@
-FROM quay.io/fedora/fedora:41
+FROM docker.io/homebrew/ubuntu24.04:4.4.23
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# https://discussion.fedoraproject.org/t/fedora-38-github-action-throttling/80393/6
+USER root
+
 RUN <<EOT
-  dnf --disablerepo=fedora-cisco-openh264 install -y neovim-0.10.4-1.fc41 readline-devel-8.2-10.fc41
-  dnf clean all
-  rm -rf /var/cache/dnf/*
-  rm -rf /var/cache/yum
+apt-get update
+apt-get install libmagickwand-dev=8:6.9.12.98+dfsg1-5.2build2 libreadline-dev=8.2-4build1 --no-install-recommends -y
+apt-get clean
+rm -rf /var/lib/apt/lists/*
 EOT
+
+USER linuxbrew
+
+ENV HOMEBREW_NO_ANALYTICS=1
+ENV HOMEBREW_NO_AUTO_UPDATE=1
+ENV HOMEBREW_NO_ENV_HINTS=1
+
+RUN <<EOT
+brew install neovim mise zsh -f
+brew cleanup -s
+echo 'eval "$(mise activate bash)"' >> /home/linuxbrew/.zshrc
+EOT
+
+CMD ["/home/linuxbrew/.linuxbrew/bin/zsh"]
