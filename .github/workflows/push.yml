@@ -9,7 +9,7 @@ on:
 
 env:
   registry: ghcr.io
-  user: nathan-yorio
+  user: y0ri0
 
 jobs:
   files:
