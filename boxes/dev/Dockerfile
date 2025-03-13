@@ -25,7 +25,7 @@ RUN <<EOT
 brew install neovim mise zsh -f
 brew cleanup -s
 
-echo 'eval "$(mise activate bash)"' >> /home/linuxbrew/.zshrc
+echo "eval \"$(mise activate bash)\"" >> /home/linuxbrew/.zshrc
 EOT
 
 CMD ["/home/linuxbrew/.linuxbrew/bin/zsh"]
