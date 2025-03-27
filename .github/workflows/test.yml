@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 0
       - name: Get Git Changed File Directories
         id: directories
-        uses: tj-actions/changed-files@cc733854b1f224978ef800d29e4709d5ee2883e4 # v44.5.5
+        uses: step-security/changed-files/@3dbe17c78367e7d60f00d78ae6781a35be47b4a1 # v45.0.1
         with:
           dir_names: false
           json: true
