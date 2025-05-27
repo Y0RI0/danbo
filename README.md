@@ -11,7 +11,9 @@ builds for use with distrobox.
 
 - I pull them down like this
 ```
-distrobox create --pull --image ghcr.io/nathan-yorio/dev:latest
+docker logout ghcr.io
+podman logout ghcr.io
+distrobox create -p -i ghcr.io/y0ri0/dev:latest --name devbox --hostname box
 ```
 
 Named Danbo after [Danbo](https://en.wikipedia.org/wiki/Danbo_(character))
